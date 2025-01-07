@@ -4,6 +4,9 @@ from settings import Settings
 from player import Player
 from bullet import Bullet
 from pirate import Pirate
+from porch import Porch
+from scoreboard import Scoreboard
+from lives import Lives
 
 
 class PirateInvasion:
@@ -24,10 +27,17 @@ class PirateInvasion:
         # Sets the window title
         pygame.display.set_caption("Pirate Invasion")
 
+        # Set the background texture image
+        self.background_texture = pygame.image.load("textures/tile_73.png")
+        self.background_texture = pygame.transform.scale(self.background_texture,
+                                                         (self.settings.screen_width, self.settings.screen_height))
+
         self.player = Player(self)  # Instance of the player
         self.bullets = pygame.sprite.Group()  # Instance for active bullets
         self.pirates = pygame.sprite.Group()  # Instance for alive pirates
-
+        self.porch = Porch(self)  # Instance of the porch
+        self.scoreboard = Scoreboard(self)
+        self.lives = Lives(self)
 
     # Check for events in the game
     def _check_events(self):
@@ -84,6 +94,43 @@ class PirateInvasion:
                 self.bullets.remove(bullet)
             #  print(len(self.bullets))
 
+    def _update_scoreboard(self):
+
+        # Check for pirate's collision with bullets, add 100 score for every collision
+        if pygame.sprite.groupcollide(self.bullets, self.pirates, True, True):
+            self.scoreboard.score += 100
+            self.settings.pirate_speed *= self.settings.pirate_speed_up
+            print("Enemy hit!")
+
+        # Get the string of the score
+        score_string = str(self.scoreboard.score)
+
+        # Get the image of the scoreboard
+        self.scoreboard.score_image = self.scoreboard.font.render(score_string, True, self.scoreboard.text_color)
+
+        # Display the score at the top right of the screen
+        self.scoreboard.score_rect = self.scoreboard.score_image.get_rect()
+        self.scoreboard.score_rect.right = self.screen_rect.right - 20
+        self.scoreboard.score_rect.top = 20
+
+        # Blit the current score on the screen
+        self.scoreboard.show_scoreboard()
+
+    # Draw the current amount of lives
+    def _update_lives(self):
+
+        # Check for collision with the porch
+        if pygame.sprite.spritecollide(self.porch, self.pirates, True):
+            print("Porch hit!")
+            self.lives.life_count -= 1
+
+            # Draw the remaining lives
+            self.lives.draw_lives()
+
+        # Check if there are still lives left
+        if self.lives.life_count <= 0:
+            sys.exit()
+
     # Add each new pirate to the fleet
     def _spawn_pirate(self):
         current_time = pygame.time.get_ticks()
@@ -92,25 +139,29 @@ class PirateInvasion:
             self.pirates.add(pirate)
             self.last_pirate_spawn = current_time  # Reset the timer after spawning
 
-    # Update pirate's position and check if they haven't been hit
-    def _update_pirates(self):
-        pass
-
     # Update everything on the screen to the latest state
     def _update_screen(self):
 
         # Fill the screen with the color set in settings
-        self.screen.fill(self.settings.bg_color)
+        self.screen.blit(self.background_texture, (0, 0))
 
-        # For each bullet in the group of bullet, draw it
-        for bullet in self.bullets.copy():
-            bullet.draw_bullet()
+        # Draw the porch on the screen
+        self.porch.draw_porch()
 
-        # Draw the ship in its current location
+        # Draw the player in its current location
         self.player.draw_player()
 
-        # Each pirate in the pirate group
+        # Draw each pirate in the pirate group
         self.pirates.draw(self.screen)
+
+        # Draw each bullet in the bullets group
+        self.bullets.draw(self.screen)
+
+        # Draw the scoreboard
+        self._update_scoreboard()
+
+        # Draw the remaining lives
+        self.lives.draw_lives()
 
         # Updates the display to the latest screen
         pygame.display.flip()
@@ -121,8 +172,10 @@ class PirateInvasion:
             self._check_events()
             self.player.update_player()
             self._update_bullets()
-            self._update_screen()
+            self._update_lives()
+            self.pirates.update()
             self._spawn_pirate()
+            self._update_screen()
             self.clock.tick(60)
 
 

@@ -1,16 +1,17 @@
 import pygame
 
 
-class Player:
+class Player(pygame.sprite.Sprite):
 
     def __init__(self, pi_game):
+        super().__init__()  # Inherit from Sprite
 
         self.screen = pi_game.screen  # Create an instance of the game screen
         self.settings = pi_game.settings  # Create  an instance of the game settings
         self.screen_rect = pi_game.screen.get_rect()  # Create an instance of the screen's rectangle
 
         # Load the image of the player and set its size
-        self.image = pygame.image.load("cannon.bmp")
+        self.image = pygame.image.load("textures/cannonMobile.png")
         self.image = pygame.transform.scale(self.image, (self.settings.player_width, self.settings.player_height))
 
         # Get the player's rectangle
