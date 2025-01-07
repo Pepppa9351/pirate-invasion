@@ -7,6 +7,7 @@ from pirate import Pirate
 from porch import Porch
 from scoreboard import Scoreboard
 from lives import Lives
+from pause import Pause
 
 
 class PirateInvasion:
@@ -17,6 +18,7 @@ class PirateInvasion:
         self.clock = pygame.time.Clock()  # Instance of clock to control the frame rate
         self.settings = Settings()  # Instance of settings
         self.last_pirate_spawn = 0  # Instance to save time for the pirate spawn
+        self.pause = False  # Instance of the game pause state
 
         # Sets the screen width and height from settings
         self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height))
@@ -36,8 +38,9 @@ class PirateInvasion:
         self.bullets = pygame.sprite.Group()  # Instance for active bullets
         self.pirates = pygame.sprite.Group()  # Instance for alive pirates
         self.porch = Porch(self)  # Instance of the porch
-        self.scoreboard = Scoreboard(self)
-        self.lives = Lives(self)
+        self.scoreboard = Scoreboard(self)  # Instance of the scoreboard
+        self.lives = Lives(self)  # Instance of the lives
+        self.pausing = Pause(self)  # Instance of the pause
 
     # Check for events in the game
     def _check_events(self):
@@ -63,6 +66,13 @@ class PirateInvasion:
             self.player.moving_down = True
         elif event.key == pygame.K_SPACE:
             self._fire_bullet()
+        elif event.key == pygame.K_ESCAPE:
+            if not self.pause:
+                self.pause = True
+                print("pause")
+            else:
+                self.pause = False
+                print("unpause")
 
     # Checks which key we let go off
     def _check_keyup_events(self, event):
@@ -170,13 +180,19 @@ class PirateInvasion:
     def run_game(self):
         while True:
             self._check_events()
-            self.player.update_player()
-            self._update_bullets()
-            self._update_lives()
-            self.pirates.update()
-            self._spawn_pirate()
-            self._update_screen()
-            self.clock.tick(60)
+
+            if self.pause:
+                self.pausing.draw_pause()
+                pygame.display.flip()
+
+            else:
+                self.player.update_player()
+                self._update_bullets()
+                self._update_lives()
+                self.pirates.update()
+                self._spawn_pirate()
+                self._update_screen()
+                self.clock.tick(60)
 
 
 if __name__ == '__main__':
