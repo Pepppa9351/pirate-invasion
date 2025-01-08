@@ -9,7 +9,7 @@ class Bullet(pygame.sprite.Sprite):
         self.screen = pi_game.screen  # Instance of the game screen
         self.settings = pi_game.settings  # Instance of the game settings
 
-        # Load the bullet image and get it's rectangle
+        # Load the bullet image and get its rectangle
         self.image = pygame.image.load("textures/cannonBall.png")
         self.image = pygame.transform.scale(self.image, (self.settings.bullet_width, self.settings.bullet_height))
         self.rect = self.image.get_rect()

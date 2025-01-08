@@ -18,7 +18,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
 
         # Start the player at the left bottom corner of the screen
-        self.rect.bottomleft = self.screen_rect.bottomleft
+        self.rect.midleft = self.screen_rect.midleft
 
         # Store the location of the player
         self.y = float(self.rect.y)

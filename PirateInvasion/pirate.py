@@ -16,9 +16,9 @@ class Pirate(pygame.sprite.Sprite):
         self.image = pygame.transform.rotate(self.image, 270)
         self.rect = self.image.get_rect()
 
-        # Start each new pirate in the top right corner
-        self.rect.x = 1200
-        self.rect.y = random.randint(0, 600)
+        # Start in a random position out of the map
+        self.rect.x = self.screen_rect.right
+        self.rect.y = random.randint(0, self.screen_rect.height - 100)
 
         # Create a float value of the pirate's vertical position
         self.y = float(self.rect.y)

@@ -19,7 +19,7 @@ class Porch(pygame.sprite.Sprite):
 
         # Set the porch position
         self.rect.x = -900
-        self.rect.y = -400
+        self.rect.y = -600
 
     # Blit the porch on the screen at its set location
     def draw_porch(self):
