@@ -36,7 +36,7 @@ class PirateInvasion:
         pygame.display.set_caption("Pirate Invasion")
 
         # Set the background texture image
-        self.background_texture = pygame.image.load("textures/tile_73.png")
+        self.background_texture = pygame.image.load("textures/water_tile.png")
         self.background_texture = pygame.transform.scale(self.background_texture,
                                                          (self.settings.screen_width, self.settings.screen_height))
 
